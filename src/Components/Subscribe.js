@@ -33,7 +33,7 @@ const Subscribe = () => {
         />
         <button
           type="submit"
-          className="bg-[#fb8500] text-white px-5 py-3 rounded-r-full hover:bg-orange-600 transition-all flex items-center justify-center"
+          className="bg-[#fb8500] border border-[#fb8500] text-white px-5 py-3 rounded-r-full hover:bg-orange-600 transition-all flex items-center justify-center"
         >
           {/* Show text on medium and up, show only arrow on small screens */}
           <span className="hidden sm:inline font-semibold">Subscribe</span>

@@ -64,9 +64,7 @@ const DonorList = () => {
   const [locationQuery, setLocationQuery] = useState(sessionStorage.getItem('userLocation') || '');
   const [selectedGroups, setSelectedGroups] = useState([]);
   const [onlyActive, setOnlyActive] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
-  const dropdownRef = useRef();
 
   useEffect(() => {
     axios.get('https://vital001-4307f-default-rtdb.firebaseio.com/donors.json')
@@ -74,16 +72,6 @@ const DonorList = () => {
         const formatted = Object.entries(res.data || {}).map(([id, d]) => ({ id, ...d }));
         setDonors(formatted);
       });
-  }, []);
-
-  useEffect(() => {
-    const close = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
   }, []);
 
   const toggleGroup = (g) => {
@@ -109,9 +97,9 @@ const DonorList = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap justify-center gap-4 mb-4">
-        {/* Location input */}
-        <div className="relative w-72">
+      <div className="flex flex-wrap justify-center gap-4 mb-4 items-center">
+        {/* Location and Toggle Row */}
+        <div className="flex flex-wrap items-center gap-4 justify-center">
           <input
             type="text"
             placeholder="Search by location"
@@ -120,62 +108,35 @@ const DonorList = () => {
               setLocationQuery(e.target.value);
               sessionStorage.setItem('userLocation', e.target.value);
             }}
-            className="border border-blue-400 rounded-lg px-4 py-2 w-full bg-white shadow-sm"
+            className="border-2  border-gray-300 rounded-lg px-4 py-2 md:w-96 w-64 bg-white "
           />
-        </div>
-
-        {/* Blood Group Dropdown */}
-        <div className="relative w-72" ref={dropdownRef}>
-          <div
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="border border-blue-400 bg-white rounded-lg px-4 py-2 shadow-sm cursor-pointer min-h-[44px]"
-          >
-            {selectedGroups.length > 0 ? (
-              <div className="flex flex-wrap gap-1">
-                {selectedGroups.map(g => (
-                  <span key={g} className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                    {g}
-                    <button onClick={(e) => { e.stopPropagation(); toggleGroup(g); }} className="ml-1 text-red-500">×</button>
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <span className="text-gray-400 text-sm">Select blood group(s)</span>
-            )}
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-700 font-medium">Only Active</label>
+            <button
+              onClick={() => setOnlyActive(prev => !prev)}
+              className={`w-10 h-6 flex items-center rounded-full ${onlyActive ? 'bg-blue-600' : 'bg-gray-300'}`}
+            >
+              <span className={`w-4 h-4 rounded-full bg-white transform transition-transform duration-200 ${onlyActive ? 'translate-x-5' : 'translate-x-1'}`} />
+            </button>
           </div>
-
-          {showDropdown && (
-            <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded shadow z-10 max-h-60 overflow-y-auto">
-              <div className="p-2 text-center">
-                <button
-                  onClick={() => setShowDropdown(false)}
-                  className="text-xs bg-blue-500 text-white px-3 py-1 rounded"
-                >
-                  Done
-                </button>
-              </div>
-              {bloodGroups.map(g => (
-                <div
-                  key={g}
-                  onClick={() => toggleGroup(g)}
-                  className={`px-4 py-2 cursor-pointer text-sm hover:bg-blue-100 ${selectedGroups.includes(g) ? 'bg-blue-50 font-medium text-blue-700' : ''}`}
-                >
-                  {g}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Toggle Active Donors */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-700 font-medium">Only Active</label>
-          <button
-            onClick={() => setOnlyActive(prev => !prev)}
-            className={`w-10 h-6 flex items-center rounded-full ${onlyActive ? 'bg-blue-600' : 'bg-gray-300'}`}
-          >
-            <span className={`w-4 h-4 rounded-full bg-white transform transition-transform duration-200 ${onlyActive ? 'translate-x-5' : 'translate-x-1'}`} />
-          </button>
+        {/* Blood Group Tags Row */}
+        <div className="flex flex-wrap gap-2 w-full justify-center mt-2">
+          {bloodGroups.map((g) => (
+            <button
+              key={g}
+              onClick={() => toggleGroup(g)}
+              className={`px-4 py-1 rounded-full text-sm border transition-all ${
+                selectedGroups.includes(g)
+                  ? 'bg-green-500 text-white border-green-600'
+                  : 'bg-white text-gray-600 border-gray-300 hover:bg-blue-50'
+              }`}
+              style={{ minWidth: '80px', textAlign: 'center' }}
+            >
+              {g}
+            </button>
+          ))}
         </div>
       </div>
 

@@ -56,7 +56,7 @@ const Emergency = () => {
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '500px' }}>
+    <div className='min-h-screen' style={{ position: 'relative', width: '100%', height: '500px' }}>
       <MapContainer
         center={location || { lat: 20, lng: 0 }}
         zoom={location ? 15 : 2}
